@@ -72,6 +72,13 @@ func String(key string, val string) Field {
 	return Field{key: key, fieldType: stringType, str: val}
 }
 
+func NullableString(key string, val string) Field {
+	if val == "" {
+		return Skip()
+	}
+	return Field{key: key, fieldType: stringType, str: val}
+}
+
 func Err(err error) Field {
 	if err == nil {
 		return Skip()
