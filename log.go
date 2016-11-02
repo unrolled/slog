@@ -1,7 +1,6 @@
 package slog
 
 import (
-	"io"
 	"os"
 	"sync"
 	"time"
@@ -9,7 +8,7 @@ import (
 
 var (
 	// Writer is the writer interface which the logs will be written too.
-	Writer io.Writer = os.Stdout
+	Writer = newLockedWriteSyncer(os.Stdout)
 
 	// TimeStampKey is the json key for the timestamp output.
 	TimeStampKey = "ts"
@@ -71,10 +70,12 @@ func Error(message string, fields ...Field) {
 
 func Panic(message string, fields ...Field) {
 	logMessage(panicB, []byte(message), fields)
+	Writer.Sync()
 	panic(message)
 }
 
 func Fatal(message string, fields ...Field) {
 	logMessage(fatalB, []byte(message), fields)
+	Writer.Sync()
 	os.Exit(1)
 }

@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	_hex   = "0123456789abcdef"
-	digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+	_hex             = "0123456789abcdef"
+	digits           = "0123456789abcdefghijklmnopqrstuvwxyz"
+	initialFloatSize = 24
 )
 
 var shifts = [len(digits) + 1]uint{
@@ -101,8 +102,7 @@ func appendFloat64(b *bytes.Buffer, key string, val float64) {
 	case math.IsInf(val, -1):
 		b.WriteString("-Inf")
 	default:
-		// TODO: Find a less allocate intensive way of doing this (currently 2 allocs).
-		b.WriteString(strconv.FormatFloat(val, 'f', -1, 64))
+		b.Write(strconv.AppendFloat(make([]byte, 0, initialFloatSize), val, 'f', -1, 64))
 	}
 	b.WriteByte(',')
 }

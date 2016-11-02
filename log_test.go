@@ -15,8 +15,8 @@ type logRecord struct {
 	Fields  map[string]interface{} `json:"fields"`
 }
 
-func BenchmarkJSON(b *testing.B) {
-	Writer = ioutil.Discard
+func BenchmarkSlog(b *testing.B) {
+	Writer = &noSyncWrapper{ioutil.Discard}
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			Debug(
@@ -24,7 +24,7 @@ func BenchmarkJSON(b *testing.B) {
 				String("str", "foo"),
 				Int("int", 1),
 				Int64("int64", 1),
-				Float64("float64", 1.0),
+				Float64("float64", 11723445172634.12837),
 				String("string1", "\n"),
 				String("string2", "💩"),
 				String("string3", "🤔"),
@@ -44,7 +44,7 @@ func BenchmarkStandardJSON(b *testing.B) {
 			"str":     "foo",
 			"int":     int(1),
 			"int64":   int64(1),
-			"float64": float64(1.0),
+			"float64": float64(11723445172634.12837),
 			"string1": "\n",
 			"string2": "💩",
 			"string3": "🤔",
@@ -80,7 +80,7 @@ func BenchmarkStandardCombo(b *testing.B) {
 			"str":     "foo",
 			"int":     int(1),
 			"int64":   int64(1),
-			"float64": float64(1.0),
+			"float64": float64(11723445172634.12837),
 			"string1": "\n",
 			"string2": "💩",
 			"string3": "🤔",
