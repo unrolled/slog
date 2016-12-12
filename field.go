@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+	"net/http"
 	"time"
 )
 
@@ -92,6 +93,14 @@ func Time(key string, val time.Time) Field {
 
 func Duration(key string, val time.Duration) Field {
 	return Int64(key, int64(val))
+}
+
+func Request(r *http.Request) Field {
+	if token := r.Header.Get(RequestHeaderKey); token != "" {
+		return String(RequestFieldKey, token)
+	}
+
+	return Skip()
 }
 
 func (f Field) append(b *bytes.Buffer) {

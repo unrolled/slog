@@ -12,6 +12,9 @@ var (
 
 	// TimeStampKey is the json key for the timestamp output.
 	TimeStampKey = "ts"
+
+	// RequestToken is the token generator for the request middleware.
+	RequestToken Token = &genericToken{}
 )
 
 var (
