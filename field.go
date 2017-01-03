@@ -88,7 +88,7 @@ func Err(err error) Field {
 }
 
 func Time(key string, val time.Time) Field {
-	return Float64(key, float64(val.UnixNano())/float64(time.Second))
+	return String(key, val.Format(time.RFC3339))
 }
 
 func Duration(key string, val time.Duration) Field {
