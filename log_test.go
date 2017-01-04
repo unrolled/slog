@@ -16,7 +16,7 @@ type logRecord struct {
 }
 
 func BenchmarkSlog(b *testing.B) {
-	Writer = &noSyncWrapper{ioutil.Discard}
+	Writer = DiscardWrapper
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			Debug(

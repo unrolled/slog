@@ -2,6 +2,7 @@ package slog
 
 import (
 	"io"
+	"io/ioutil"
 	"sync"
 )
 
@@ -34,6 +35,9 @@ func (s *lockedWriteSyncer) Sync() error {
 	s.Unlock()
 	return err
 }
+
+// DiscardWrapper is used for testing.
+var DiscardWrapper = &noSyncWrapper{ioutil.Discard}
 
 type noSyncWrapper struct {
 	io.Writer
