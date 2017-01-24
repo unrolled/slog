@@ -55,6 +55,8 @@ func logMessage(l, msg []byte, fields []Field) {
 	bufPool.put(bp)
 }
 
+type LogFunc func(message string, fields ...Field)
+
 func Debug(message string, fields ...Field) {
 	logMessage(debugB, []byte(message), fields)
 }
