@@ -19,7 +19,7 @@ func Requestify(next http.Handler) http.Handler {
 		token := RequestToken.Generate()
 		r.Header.Add(RequestHeaderKey, token)
 
-		if RequestFieldKey != "" {
+		if ResponseHeaderKey != "" {
 			w.Header().Add(ResponseHeaderKey, token)
 		}
 		next.ServeHTTP(w, r)
