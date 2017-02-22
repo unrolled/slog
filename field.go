@@ -84,7 +84,7 @@ func Err(err error) Field {
 	if err == nil {
 		return Skip()
 	}
-	return Field{key: "error", fieldType: errorType, obj: err}
+	return Field{key: "err", fieldType: errorType, obj: err}
 }
 
 func Time(key string, val time.Time) Field {
