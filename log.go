@@ -20,9 +20,6 @@ var (
 var (
 	mu sync.Mutex
 
-	levelB = []byte("level")
-	msgB   = []byte("msg")
-
 	debugB = []byte("debug")
 	infoB  = []byte("info")
 	warnB  = []byte("warn")
@@ -36,13 +33,14 @@ func logMessage(l, msg []byte, fields []Field) {
 
 	bp.WriteByte('{')
 
-	appendKeyValue(bp, levelB, l)
-	Time(TimeStampKey, time.Now()).append(bp)
-	appendKeyValue(bp, msgB, msg)
+	appendKeyValue(bp, l, msg)
 
 	for _, f := range fields {
 		f.append(bp)
 	}
+
+	// Add the time at the end... most log services pick this up automatically anyway.
+	Time(TimeStampKey, time.Now()).append(bp)
 
 	bp.Truncate(bp.Len() - 1)
 	bp.WriteByte('}')

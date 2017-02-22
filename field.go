@@ -88,7 +88,7 @@ func Err(err error) Field {
 }
 
 func Time(key string, val time.Time) Field {
-	return String(key, val.Format(time.RFC3339))
+	return Int64(key, val.Unix())
 }
 
 func Duration(key string, val time.Duration) Field {
