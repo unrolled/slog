@@ -30,6 +30,7 @@ func appendKeyValue(b *bytes.Buffer, k, v []byte) {
 	b.Write(v)
 	b.WriteByte('"')
 	b.WriteByte(',')
+	b.WriteByte(' ')
 }
 
 func appendString(b *bytes.Buffer, key, val string) {
@@ -41,6 +42,7 @@ func appendString(b *bytes.Buffer, key, val string) {
 	safeAppendString(b, val)
 	b.WriteByte('"')
 	b.WriteByte(',')
+	b.WriteByte(' ')
 }
 
 func appendBool(b *bytes.Buffer, key string, val bool) {
@@ -56,6 +58,7 @@ func appendBool(b *bytes.Buffer, key string, val bool) {
 	}
 	b.WriteByte('"')
 	b.WriteByte(',')
+	b.WriteByte(' ')
 }
 
 func appendInt(b *bytes.Buffer, key string, val int) {
@@ -69,6 +72,7 @@ func appendInt64(b *bytes.Buffer, key string, val int64) {
 	b.WriteByte(':')
 	formatBits(b, uint64(val), 10, val < 0)
 	b.WriteByte(',')
+	b.WriteByte(' ')
 }
 
 func appendUint(b *bytes.Buffer, key string, val uint) {
@@ -82,6 +86,7 @@ func appendUint64(b *bytes.Buffer, key string, val uint64) {
 	b.WriteByte(':')
 	formatBits(b, uint64(val), 10, val < 0)
 	b.WriteByte(',')
+	b.WriteByte(' ')
 }
 
 func appendUintptr(b *bytes.Buffer, key string, val uintptr) {
@@ -105,6 +110,7 @@ func appendFloat64(b *bytes.Buffer, key string, val float64) {
 		b.Write(strconv.AppendFloat(make([]byte, 0, initialFloatSize), val, 'f', -1, 64))
 	}
 	b.WriteByte(',')
+	b.WriteByte(' ')
 }
 
 // From `uber-go/zap`.

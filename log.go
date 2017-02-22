@@ -42,7 +42,7 @@ func logMessage(l, msg []byte, fields []Field) {
 	// Add the time at the end... most log services pick this up automatically anyway.
 	Time(TimeStampKey, time.Now()).append(bp)
 
-	bp.Truncate(bp.Len() - 1)
+	bp.Truncate(bp.Len() - 2) // comma and space
 	bp.WriteByte('}')
 	bp.WriteByte('\n')
 
