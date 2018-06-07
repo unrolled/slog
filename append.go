@@ -84,7 +84,7 @@ func appendUint64(b *bytes.Buffer, key string, val uint64) {
 	safeAppendString(b, key)
 	b.WriteByte('"')
 	b.WriteByte(':')
-	formatBits(b, uint64(val), 10, val < 0)
+	formatBits(b, uint64(val), 10, false)
 	b.WriteByte(',')
 	b.WriteByte(' ')
 }
@@ -113,7 +113,6 @@ func appendFloat64(b *bytes.Buffer, key string, val float64) {
 	b.WriteByte(' ')
 }
 
-// From `uber-go/zap`.
 func safeAppendString(buf *bytes.Buffer, s string) {
 	for i := 0; i < len(s); {
 		if b := s[i]; b < utf8.RuneSelf {

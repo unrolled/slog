@@ -1,3 +1,4 @@
+// go test -bench=. -benchmem
 package slog
 
 import (
@@ -19,7 +20,7 @@ func BenchmarkSlog(b *testing.B) {
 	Writer = DiscardWrapper
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			Debug(
+			Warning(
 				"fake",
 				String("str", "foo"),
 				Int("int", 1),
@@ -61,17 +62,17 @@ func BenchmarkStandardJSON(b *testing.B) {
 }
 
 func BenchmarkStandardLog(b *testing.B) {
-	stdlog := log.New(ioutil.Discard, "", 0)
+	stdLog := log.New(ioutil.Discard, "", 0)
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			stdlog.Printf("level:debug msg:fake time:%d str:%s int:%d int64:%d float64:%f string1:%s string2:%s string3:%s string4:%s bool:%v",
+			stdLog.Printf("level:debug msg:fake time:%s str:%s int:%d int64:%d float64:%f string1:%s string2:%s string3:%s string4:%s bool:%v",
 				time.Now(), "foo", 1, 1, 1.0, "\n", "💩", "🤔", "🙊", true)
 		}
 	})
 }
 
 func BenchmarkStandardCombo(b *testing.B) {
-	stdlog := log.New(ioutil.Discard, "", 0)
+	stdLog := log.New(ioutil.Discard, "", 0)
 	record := logRecord{
 		Level:   "debug",
 		Message: "fake",
@@ -92,7 +93,7 @@ func BenchmarkStandardCombo(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			out, _ := json.Marshal(record)
-			stdlog.Println(string(out))
+			stdLog.Println(string(out))
 		}
 	})
 }

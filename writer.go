@@ -18,7 +18,7 @@ type lockedWriteSyncer struct {
 	ws WriteSyncer
 }
 
-func newLockedWriteSyncer(ws WriteSyncer) WriteSyncer {
+func NewLockedWriteSyncer(ws WriteSyncer) WriteSyncer {
 	return &lockedWriteSyncer{ws: ws}
 }
 

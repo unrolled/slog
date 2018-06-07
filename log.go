@@ -8,7 +8,7 @@ import (
 
 var (
 	// Writer is the writer interface which the logs will be written too.
-	Writer = newLockedWriteSyncer(os.Stdout)
+	Writer = NewLockedWriteSyncer(os.Stdout)
 
 	// TimeStampKey is the json key for the timestamp output.
 	TimeStampKey = "ts"
@@ -20,7 +20,6 @@ var (
 var (
 	mu sync.Mutex
 
-	debugB = []byte("debug")
 	infoB  = []byte("info")
 	warnB  = []byte("warn")
 	errorB = []byte("error")
@@ -36,11 +35,11 @@ func logMessage(l, msg []byte, fields []Field) {
 	appendKeyValue(bp, l, msg)
 
 	for _, f := range fields {
-		f.append(bp)
+		f.appendField(bp)
 	}
 
 	// Add the time at the end... most log services pick this up automatically anyway.
-	Time(TimeStampKey, time.Now()).append(bp)
+	Time(TimeStampKey, time.Now()).appendField(bp)
 
 	bp.Truncate(bp.Len() - 2) // comma and space
 	bp.WriteByte('}')
@@ -55,15 +54,11 @@ func logMessage(l, msg []byte, fields []Field) {
 
 type LogFunc func(message string, fields ...Field)
 
-func Debug(message string, fields ...Field) {
-	logMessage(debugB, []byte(message), fields)
-}
-
 func Info(message string, fields ...Field) {
 	logMessage(infoB, []byte(message), fields)
 }
 
-func Warn(message string, fields ...Field) {
+func Warning(message string, fields ...Field) {
 	logMessage(warnB, []byte(message), fields)
 }
 
