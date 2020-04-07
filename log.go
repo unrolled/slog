@@ -13,6 +13,9 @@ var (
 	// TimeStampKey is the json key for the timestamp output.
 	TimeStampKey = "ts"
 
+	// EnableDebug will print debug logs if true.
+	EnableDebug = false
+
 	// RequestToken is the token generator for the request middleware.
 	RequestToken Token = &genericToken{}
 )
@@ -20,6 +23,7 @@ var (
 var (
 	mu sync.Mutex
 
+	debugB = []byte("debug")
 	infoB  = []byte("info")
 	warnB  = []byte("warn")
 	errorB = []byte("error")
@@ -53,6 +57,12 @@ func logMessage(l, msg []byte, fields []Field) {
 }
 
 type LogFunc func(message string, fields ...Field)
+
+func Debug(message string, fields ...Field) {
+	if EnableDebug {
+		logMessage(debugB, []byte(message), fields)
+	}
+}
 
 func Info(message string, fields ...Field) {
 	logMessage(infoB, []byte(message), fields)

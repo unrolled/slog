@@ -129,30 +129,3 @@ func (f Field) appendField(b *bytes.Buffer) {
 		panic(fmt.Sprintf("unknown field type found: %v", f))
 	}
 }
-
-func (f Field) keyVal() (string, interface{}) {
-	switch f.fieldType {
-	case boolType:
-		return f.key, f.ival == 1
-	case floatType:
-		return f.key, math.Float64frombits(uint64(f.ival))
-	case intType:
-		return f.key, int(f.ival)
-	case int64Type:
-		return f.key, f.ival
-	case uintType:
-		return f.key, uint(f.ival)
-	case uint64Type:
-		return f.key, uint64(f.ival)
-	case uintptrType:
-		return f.key, uintptr(f.ival)
-	case stringType:
-		return f.key, f.str
-	case errorType:
-		return f.key, f.obj.(error).Error()
-	case skipType:
-		fallthrough
-	default:
-		return "", ""
-	}
-}
