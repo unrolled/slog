@@ -17,7 +17,7 @@ type LockedSyslogWriteSyncer struct {
 
 // NewDatadogLockedSyslogWriteSyncer creates a new write syncer for datadog syslog.
 func NewDatadogLockedSyslogWriteSyncer(network, address, tag, key string) WriteSyncer {
-	w, err := syslog.Dial(network, address, syslog.LOG_DEBUG|syslog.LOG_LOCAL7, tag)
+	w, err := syslog.Dial(network, address, syslog.LOG_INFO, tag)
 	if err != nil {
 		log.Fatalf("Failed to dial syslog: %s", err.Error())
 	}
