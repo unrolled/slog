@@ -1,3 +1,4 @@
+// Pulled from the github.com/oxtoacart/bpool
 package slog
 
 import (
@@ -8,7 +9,6 @@ import (
 var bufPool *bufferPool
 
 // bufferPool implements a pool of bytes.Buffers in the form of a bounded channel.
-// Pulled from the github.com/oxtoacart/bpool package (Apache licensed).
 type bufferPool struct {
 	c chan *bytes.Buffer
 }

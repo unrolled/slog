@@ -2,9 +2,10 @@ package slog
 
 import (
 	"log"
-	"log/syslog"
 	"os"
 	"sync"
+
+	"github.com/unrolled/slog/syslog"
 )
 
 // LockedSyslogWriteSyncer logs to syslog as well as stdout.
@@ -14,6 +15,18 @@ type LockedSyslogWriteSyncer struct {
 	ws WriteSyncer
 }
 
+// NewDatadogLockedSyslogWriteSyncer creates a new write syncer for datadog syslog.
+func NewDatadogLockedSyslogWriteSyncer(network, address, tag, key string) WriteSyncer {
+	w, err := syslog.Dial(network, address, syslog.LOG_DEBUG|syslog.LOG_LOCAL7, tag)
+	if err != nil {
+		log.Fatalf("Failed to dial syslog: %s", err.Error())
+	}
+
+	syslog.SetDataDogKey(key)
+	return &LockedSyslogWriteSyncer{w: w, ws: os.Stdout}
+}
+
+// NewLockedSyslogWriteSyncer creates a new write syncer for syslog.
 func NewLockedSyslogWriteSyncer(network, address, tag string) WriteSyncer {
 	w, err := syslog.Dial(network, address, syslog.LOG_DEBUG|syslog.LOG_LOCAL7, tag)
 	if err != nil {
