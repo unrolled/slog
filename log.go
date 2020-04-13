@@ -13,6 +13,12 @@ var (
 	// TimeStampKey is the json key for the timestamp output.
 	TimeStampKey = "ts"
 
+	// SeverityKey is the json key for the initial log type (info, warn, error, etc etc).
+	SeverityKey = []byte("level")
+
+	// TitleKey is the json key for the name of the log message.
+	TitleKey = []byte("msg")
+
 	// EnableDebug will print debug logs if true.
 	EnableDebug = false
 
@@ -36,7 +42,8 @@ func logMessage(l, msg []byte, fields []Field) {
 
 	bp.WriteByte('{')
 
-	appendKeyValue(bp, l, msg)
+	appendKeyValue(bp, SeverityKey, l)
+	appendKeyValue(bp, TitleKey, msg)
 
 	for _, f := range fields {
 		f.appendField(bp)
