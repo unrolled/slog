@@ -2,6 +2,7 @@ package slog
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"math"
 	"net/http"
@@ -101,6 +102,14 @@ func Request(r *http.Request) Field {
 	}
 
 	return Skip()
+}
+
+func Raw(key string, val interface{}) Field {
+	if out, err := json.Marshal(val); err == nil {
+		return String(key, fmt.Sprintf("%s", out))
+	}
+
+	return String(key, fmt.Sprintf("%#v", val))
 }
 
 func (f Field) appendField(b *bytes.Buffer) {
