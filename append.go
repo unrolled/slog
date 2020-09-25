@@ -45,6 +45,18 @@ func appendString(b *bytes.Buffer, key, val string) {
 	b.WriteByte(' ')
 }
 
+func appendJsonString(b *bytes.Buffer, key, val string) {
+	b.WriteByte('"')
+	safeAppendString(b, key)
+	b.WriteByte('"')
+	b.WriteByte(':')
+	b.WriteByte('"')
+	safeAppendJsonString(b, val)
+	b.WriteByte('"')
+	b.WriteByte(',')
+	b.WriteByte(' ')
+}
+
 func appendBool(b *bytes.Buffer, key string, val bool) {
 	b.WriteByte('"')
 	safeAppendString(b, key)
@@ -125,6 +137,49 @@ func safeAppendString(buf *bytes.Buffer, s string) {
 			case '\\', '"':
 				buf.WriteByte('\\')
 				buf.WriteByte('b')
+			case '\n':
+				buf.WriteByte('\\')
+				buf.WriteByte('n')
+			case '\r':
+				buf.WriteByte('\\')
+				buf.WriteByte('r')
+			case '\t':
+				buf.WriteByte('\\')
+				buf.WriteByte('t')
+			default:
+				// Encode bytes < 0x20, except for the escape sequences above.
+				buf.WriteString(`\u00`)
+				buf.WriteByte(_hex[b>>4])
+				buf.WriteByte(_hex[b&0xF])
+			}
+			continue
+		}
+		c, size := utf8.DecodeRuneInString(s[i:])
+		if c == utf8.RuneError && size == 1 {
+			buf.WriteString(`\ufffd`)
+			i++
+			continue
+		}
+		buf.WriteString(s[i : i+size])
+		i += size
+	}
+}
+
+func safeAppendJsonString(buf *bytes.Buffer, s string) {
+	for i := 0; i < len(s); {
+		if b := s[i]; b < utf8.RuneSelf {
+			i++
+			if 0x20 <= b && b != '\\' && b != '"' {
+				buf.WriteByte(b)
+				continue
+			}
+			switch b {
+			case '\\':
+				buf.WriteByte('\\')
+				buf.WriteByte('b')
+			case '"':
+				buf.WriteByte('\\')
+				buf.WriteByte('"')
 			case '\n':
 				buf.WriteByte('\\')
 				buf.WriteByte('n')

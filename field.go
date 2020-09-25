@@ -21,6 +21,7 @@ const (
 	uint64Type
 	uintptrType
 	stringType
+	jsonStringType
 	errorType
 	skipType
 )
@@ -81,6 +82,10 @@ func NullableString(key string, val string) Field {
 	return Field{key: key, fieldType: stringType, str: val}
 }
 
+func JsonString(key string, val string) Field {
+	return Field{key: key, fieldType: jsonStringType, str: val}
+}
+
 func Err(err error) Field {
 	if err == nil {
 		return Skip()
@@ -130,6 +135,8 @@ func (f Field) appendField(b *bytes.Buffer) {
 		appendUintptr(b, f.key, uintptr(f.ival))
 	case stringType:
 		appendString(b, f.key, f.str)
+	case jsonStringType:
+		appendJsonString(b, f.key, f.str)
 	case errorType:
 		appendString(b, f.key, f.obj.(error).Error())
 	case skipType:
