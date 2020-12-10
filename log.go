@@ -27,7 +27,8 @@ var (
 )
 
 var (
-	mu sync.Mutex
+	mu           sync.Mutex
+	globalFields = []Field{}
 
 	debugB = []byte("debug")
 	infoB  = []byte("info")
@@ -45,8 +46,14 @@ func logMessage(l, msg []byte, fields []Field) {
 	appendKeyValue(bp, SeverityKey, l)
 	appendKeyValue(bp, TitleKey, msg)
 
+	// Start with the passed in fields.
 	for _, f := range fields {
 		f.appendField(bp)
+	}
+
+	// Add in the global fields last.
+	for _, gf := range globalFields {
+		gf.appendField(bp)
 	}
 
 	// Add the time at the end... most log services pick this up automatically anyway.
@@ -93,4 +100,12 @@ func Fatal(message string, fields ...Field) {
 	logMessage(fatalB, []byte(message), fields)
 	Writer.Sync()
 	os.Exit(1)
+}
+
+// AddGlobalFields allows you to set fields that will automatically be appended to all messages.
+func AddGlobalFields(fields ...Field) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	globalFields = append(globalFields, fields...)
 }
