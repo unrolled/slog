@@ -13,6 +13,9 @@ var (
 	// TimeStampKey is the json key for the timestamp output.
 	TimeStampKey = "ts"
 
+	// TimeFormat will set the `slog.Time` output format if supplied. Defaults to `time.Unix()`.
+	TimeFormat = ""
+
 	// SeverityKey is the json key for the initial log type (info, warn, error, etc etc).
 	SeverityKey = []byte("level")
 

@@ -94,6 +94,10 @@ func Err(err error) Field {
 }
 
 func Time(key string, val time.Time) Field {
+	if len(TimeFormat) > 0 {
+		return String(key, val.Format(TimeFormat))
+	}
+
 	return Int64(key, val.Unix())
 }
 
