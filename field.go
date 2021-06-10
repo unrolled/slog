@@ -86,6 +86,21 @@ func JsonString(key string, val string) Field {
 	return Field{key: key, fieldType: jsonStringType, str: val}
 }
 
+func Jsonify(key string, val interface{}) Field {
+	if val == nil {
+		return Skip()
+	}
+
+	var final string
+	result, err := json.Marshal(val)
+	if err != nil {
+		final = fmt.Sprintf("%#v || err(%s)", val, err.Error())
+	} else {
+		final = string(result)
+	}
+	return Field{key: key, fieldType: jsonStringType, str: final}
+}
+
 func Err(err error) Field {
 	if err == nil {
 		return Skip()
