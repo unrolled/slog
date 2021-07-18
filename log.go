@@ -2,6 +2,7 @@ package slog
 
 import (
 	"os"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -39,6 +40,8 @@ var (
 	errorB = []byte("error")
 	panicB = []byte("panic")
 	fatalB = []byte("fatal")
+
+	traceMsg = []byte("trace")
 )
 
 func logMessage(l, msg []byte, fields []Field) {
@@ -73,36 +76,54 @@ func logMessage(l, msg []byte, fields []Field) {
 	bufPool.put(bp)
 }
 
+// LogFunc is the generic interface that the level funcs conform with.
 type LogFunc func(message string, fields ...Field)
 
+// Debug outputs a debug message. If `EnabledDebug` is false, this turns into a noop.
 func Debug(message string, fields ...Field) {
 	if EnableDebug {
 		logMessage(debugB, []byte(message), fields)
 	}
 }
 
+// Info outputs an info message.
 func Info(message string, fields ...Field) {
 	logMessage(infoB, []byte(message), fields)
 }
 
+// Warning outputs a warning message.
 func Warning(message string, fields ...Field) {
 	logMessage(warnB, []byte(message), fields)
 }
 
+// Error outputs an error message.
 func Error(message string, fields ...Field) {
 	logMessage(errorB, []byte(message), fields)
 }
 
+// Panic outputs a panic message and also calls `panic` with the original message.
 func Panic(message string, fields ...Field) {
 	logMessage(panicB, []byte(message), fields)
 	Writer.Sync()
 	panic(message)
 }
 
+// Fatal outputs a fatal message and forces the application to exit with return code 1.
 func Fatal(message string, fields ...Field) {
 	logMessage(fatalB, []byte(message), fields)
 	Writer.Sync()
 	os.Exit(1)
+}
+
+// TraceErr outputs the error with it's trace as an error log line, but also returns the original error.
+func TraceErr(err error) error {
+	pc := make([]uintptr, 15)
+	n := runtime.Callers(2, pc)
+	frames := runtime.CallersFrames(pc[:n])
+	frame, _ := frames.Next()
+	logMessage(errorB, traceMsg, []Field{Err(err), String("file", frame.File), Int("line", frame.Line), String("func", frame.Function)})
+
+	return err
 }
 
 // AddGlobalFields allows you to set fields that will automatically be appended to all messages.

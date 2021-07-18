@@ -2,9 +2,13 @@
 package slog
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
+	"io"
 	"io/ioutil"
 	"log"
+	"strings"
 	"testing"
 	"time"
 )
@@ -96,4 +100,32 @@ func BenchmarkStandardCombo(b *testing.B) {
 			stdLog.Println(string(out))
 		}
 	})
+}
+
+func traceErrCaller(msg string) {
+	err := errors.New(msg)
+	TraceErr(err)
+}
+
+func TestTraceInfo(t *testing.T) {
+	ogWriter := Writer
+
+	var b bytes.Buffer
+	Writer = traceSyncWrapper{&b}
+	msg := "foobar"
+	traceErrCaller(msg)
+
+	Writer = ogWriter
+
+	if !strings.Contains(b.String(), "traceErrCaller") {
+		t.Fatal()
+	}
+}
+
+type traceSyncWrapper struct {
+	io.Writer
+}
+
+func (t traceSyncWrapper) Sync() error {
+	return nil
 }
