@@ -40,8 +40,6 @@ var (
 	errorB = []byte("error")
 	panicB = []byte("panic")
 	fatalB = []byte("fatal")
-
-	traceMsg = []byte("trace")
 )
 
 func logMessage(l, msg []byte, fields []Field) {
@@ -117,13 +115,18 @@ func Fatal(message string, fields ...Field) {
 
 // TraceErr outputs the error with it's trace as an error log line, but also returns the original error.
 func TraceErr(err error, fields ...Field) error {
+	// If there is no error, do nothing!
+	if err == nil {
+		return err
+	}
+
 	pc := make([]uintptr, 15)
 	n := runtime.Callers(2, pc)
 	frames := runtime.CallersFrames(pc[:n])
 	frame, _ := frames.Next()
 
 	traceFields := []Field{Err(err), String("file", frame.File), Int("line", frame.Line), String("func", frame.Function)}
-	logMessage(errorB, traceMsg, append(traceFields, fields...))
+	logMessage(errorB, []byte("trace"), append(traceFields, fields...))
 
 	return err
 }
