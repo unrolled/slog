@@ -116,12 +116,14 @@ func Fatal(message string, fields ...Field) {
 }
 
 // TraceErr outputs the error with it's trace as an error log line, but also returns the original error.
-func TraceErr(err error) error {
+func TraceErr(err error, fields ...Field) error {
 	pc := make([]uintptr, 15)
 	n := runtime.Callers(2, pc)
 	frames := runtime.CallersFrames(pc[:n])
 	frame, _ := frames.Next()
-	logMessage(errorB, traceMsg, []Field{Err(err), String("file", frame.File), Int("line", frame.Line), String("func", frame.Function)})
+
+	traceFields := []Field{Err(err), String("file", frame.File), Int("line", frame.Line), String("func", frame.Function)}
+	logMessage(errorB, traceMsg, append(traceFields, fields...))
 
 	return err
 }

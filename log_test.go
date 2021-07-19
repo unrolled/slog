@@ -102,9 +102,9 @@ func BenchmarkStandardCombo(b *testing.B) {
 	})
 }
 
-func traceErrCaller(msg string) {
+func traceErrCaller(msg, msg2 string) {
 	err := errors.New(msg)
-	TraceErr(err)
+	TraceErr(err, String("msg2", msg2))
 }
 
 func TestTraceInfo(t *testing.T) {
@@ -113,11 +113,17 @@ func TestTraceInfo(t *testing.T) {
 	var b bytes.Buffer
 	Writer = traceSyncWrapper{&b}
 	msg := "foobar"
-	traceErrCaller(msg)
+	traceErrCaller(msg, "helloworld")
 
 	Writer = ogWriter
 
 	if !strings.Contains(b.String(), "traceErrCaller") {
+		t.Fatal()
+	}
+	if !strings.Contains(b.String(), "foobar") {
+		t.Fatal()
+	}
+	if !strings.Contains(b.String(), "helloworld") {
 		t.Fatal()
 	}
 }
