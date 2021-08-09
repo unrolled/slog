@@ -30,16 +30,25 @@ var (
 	RequestToken Token = &genericToken{}
 )
 
+const (
+	SeverityDebug = "debug"
+	SeverityInfo  = "info"
+	SeverityWarn  = "warn"
+	SeverityError = "error"
+	SeverityPanic = "panic"
+	SeverityFatal = "fatal"
+)
+
 var (
 	mu           sync.Mutex
 	globalFields = []Field{}
 
-	debugB = []byte("debug")
-	infoB  = []byte("info")
-	warnB  = []byte("warn")
-	errorB = []byte("error")
-	panicB = []byte("panic")
-	fatalB = []byte("fatal")
+	debugB = []byte(SeverityDebug)
+	infoB  = []byte(SeverityInfo)
+	warnB  = []byte(SeverityWarn)
+	errorB = []byte(SeverityError)
+	panicB = []byte(SeverityPanic)
+	fatalB = []byte(SeverityFatal)
 	traceB = errorB
 )
 
