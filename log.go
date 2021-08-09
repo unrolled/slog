@@ -40,6 +40,7 @@ var (
 	errorB = []byte("error")
 	panicB = []byte("panic")
 	fatalB = []byte("fatal")
+	traceB = errorB
 )
 
 func logMessage(l, msg []byte, fields []Field) {
@@ -126,7 +127,7 @@ func TraceErr(err error, fields ...Field) error {
 	frame, _ := frames.Next()
 
 	traceFields := []Field{Err(err), String("file", frame.File), Int("line", frame.Line), String("func", frame.Function)}
-	logMessage(errorB, []byte("trace"), append(traceFields, fields...))
+	logMessage(traceB, []byte("trace"), append(traceFields, fields...))
 
 	return err
 }
@@ -137,4 +138,9 @@ func AddGlobalFields(fields ...Field) {
 	defer mu.Unlock()
 
 	globalFields = append(globalFields, fields...)
+}
+
+// SetTraceErrSeverity allows you to change the severity type for trace errors (default is "error").
+func SetTraceErrSeverity(s string) {
+	traceB = []byte(s)
 }
