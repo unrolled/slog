@@ -24,6 +24,7 @@ const (
 	jsonStringType
 	errorType
 	skipType
+	rawType
 )
 
 type Field struct {
@@ -31,6 +32,7 @@ type Field struct {
 	fieldType fieldType
 	ival      int64
 	str       string
+	raw       []byte
 	obj       interface{}
 }
 
@@ -86,6 +88,10 @@ func JsonString(key string, val string) Field {
 	return Field{key: key, fieldType: jsonStringType, str: val}
 }
 
+func RawJSON(key string, val []byte) Field {
+	return Field{key: key, fieldType: rawType, raw: val}
+}
+
 func Jsonify(key string, val interface{}) Field {
 	if val == nil {
 		return Skip()
@@ -130,7 +136,7 @@ func Request(r *http.Request) Field {
 
 func Raw(key string, val interface{}) Field {
 	if out, err := json.Marshal(val); err == nil {
-		return String(key, fmt.Sprintf("%s", out))
+		return String(key, string(out))
 	}
 
 	return String(key, fmt.Sprintf("%#v", val))
@@ -160,6 +166,8 @@ func (f Field) appendField(b *bytes.Buffer) {
 		appendString(b, f.key, f.obj.(error).Error())
 	case skipType:
 		break
+	case rawType:
+		appendRaw(b, f.key, f.raw)
 	default:
 		panic(fmt.Sprintf("unknown field type found: %v", f))
 	}

@@ -27,7 +27,7 @@ func NewLockedSyslogWriteSyncer(network, address, tag string) WriteSyncer {
 func (l *LockedSyslogWriteSyncer) Write(bs []byte) (int, error) {
 	l.Lock()
 	n, err := l.w.Write(bs)
-	l.ws.Write(bs)
+	_, _ = l.ws.Write(bs)
 	l.Unlock()
 	return n, err
 }

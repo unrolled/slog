@@ -57,6 +57,18 @@ func appendJsonString(b *bytes.Buffer, key, val string) {
 	b.WriteByte(' ')
 }
 
+func appendRaw(b *bytes.Buffer, key string, raw []byte) {
+	b.WriteByte('"')
+	safeAppendString(b, key)
+	b.WriteByte('"')
+	b.WriteByte(':')
+	for _, char := range raw {
+		b.WriteByte(char)
+	}
+	b.WriteByte(',')
+	b.WriteByte(' ')
+}
+
 func appendBool(b *bytes.Buffer, key string, val bool) {
 	b.WriteByte('"')
 	safeAppendString(b, key)

@@ -78,7 +78,7 @@ func logMessage(l, msg []byte, fields []Field) {
 	bp.WriteByte('\n')
 
 	mu.Lock()
-	bp.WriteTo(Writer)
+	_, _ = bp.WriteTo(Writer)
 	mu.Unlock()
 
 	bufPool.put(bp)
@@ -112,14 +112,14 @@ func Error(message string, fields ...Field) {
 // Panic outputs a panic message and also calls `panic` with the original message.
 func Panic(message string, fields ...Field) {
 	logMessage(panicB, []byte(message), fields)
-	Writer.Sync()
+	_ = Writer.Sync()
 	panic(message)
 }
 
 // Fatal outputs a fatal message and forces the application to exit with return code 1.
 func Fatal(message string, fields ...Field) {
 	logMessage(fatalB, []byte(message), fields)
-	Writer.Sync()
+	_ = Writer.Sync()
 	os.Exit(1)
 }
 

@@ -60,7 +60,7 @@ func BenchmarkStandardJSON(b *testing.B) {
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			json.Marshal(record)
+			_, _ = json.Marshal(record)
 		}
 	})
 }
@@ -104,7 +104,7 @@ func BenchmarkStandardCombo(b *testing.B) {
 
 func traceErrCaller(msg, msg2 string) {
 	err := errors.New(msg)
-	TraceErr(err, String("msg2", msg2))
+	_ = TraceErr(err, String("msg2", msg2))
 }
 
 func TestTraceInfo(t *testing.T) {
@@ -134,4 +134,26 @@ type traceSyncWrapper struct {
 
 func (t traceSyncWrapper) Sync() error {
 	return nil
+}
+
+func TestRawJSON(t *testing.T) {
+	ogWriter := Writer
+
+	var b bytes.Buffer
+	Writer = traceSyncWrapper{&b}
+	Info("testing raw json", RawJSON("raw", []byte(`{"foo":"bar","context":{"one":1,"two":2}}`)))
+	Writer = ogWriter
+
+	// We expect the output, but trim the time field off.
+	expected := `{"level":"info", "msg":"testing raw json", "raw":{"foo":"bar","context":{"one":1,"two":2}},`
+	if !strings.Contains(b.String(), expected) {
+		t.Fatal()
+	}
+
+	// Ensure it's valid json.
+	var jData map[string]interface{}
+	err := json.Unmarshal(b.Bytes(), &jData)
+	if err != nil {
+		t.Fatal()
+	}
 }
